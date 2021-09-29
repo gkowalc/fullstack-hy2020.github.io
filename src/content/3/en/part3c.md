@@ -407,6 +407,8 @@ We can verify in the browser that the backend works for displaying all of the do
 
 ![](../../images/3/44ea.png)
 
+
+  
 The application works almost perfectly. The frontend assumes that every object has a unique id in the <i>id</i> field. We also don't want to return the mongo versioning field <i>\_\_v</i> to the frontend.
 
 One way to format the objects returned by Mongoose is to [modify](https://stackoverflow.com/questions/7034848/mongodb-output-id-instead-of-id) the _toJSON_ method of the schema, which is used on all instances of the models produced with that schema. Modifying the method works like this:
@@ -435,6 +437,12 @@ app.get('/api/notes', (request, response) => {
 
 Now the _notes_ variable is assigned to an array of objects returned by Mongo. When the response is sent in the JSON format, the _toJSON_ method of each object in the array is called automatically by the [JSON.stringify](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) method.
 
+ Keep in mind that .env file is not included in git repository. As a result when you deploy backend + front to heroku notes won't be generated. 
+ If you look closer at the logs (by running heroku logs --tail command) you should see following entries during app startup:
+  ```
+  error connecting to MongoDB: The `uri` parameter to `openUri()` must be a string, got "undefined". Make sure the first parameter to `mongoose.connect()` or `mongoose.createConnection()` is a string.
+  ```
+ Issue can be resolved by adding environment variable MONGODB_URI from .env file to Heroku -> Settings -> Config Vars
 ### Database configuration into its own module
 
 Before we refactor the rest of the backend to use the database, let's extract the Mongoose specific code into its own module.
